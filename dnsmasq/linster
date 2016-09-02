@@ -1,0 +1,21 @@
+#!/bin/sh
+
+CONF="{{LINSTER_CONF}}"
+
+[ -e $CONF ] && . $CONF
+
+mkdir -p $HOSTSDIR
+
+read action pass hostname ip
+[ $pass != $PASSWORD ] && exit
+
+case $action in
+	add)
+		echo $ip $hostname > $HOSTSDIR/$hostname
+		;;
+	del)
+		rm $HOSTSDIR/$hostname
+		;;
+	*)
+		exit
+esac
