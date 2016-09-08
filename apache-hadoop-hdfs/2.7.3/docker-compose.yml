@@ -14,7 +14,9 @@ services:
     dns:
       - dnsserver
     hostname: master
-
+    stdin_open: true
+    tty: true
+    restart: always
   slave:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: datanode
@@ -28,5 +30,8 @@ services:
       - nameserver:dnsserver
     dns:
       - dnsserver
+    stdin_open: true
+    tty: true
+    restart: always
   nameserver:
     image: djx339/dnsmasq
