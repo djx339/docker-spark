@@ -29,13 +29,11 @@ after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ${image}
   - docker-compose up -d
-  - docker-compose scale slave=3
   - docker-compose ps
-  - docker-compose exec master hdfs dfsadmin -report -live
-  - docker-compose exec master hdfs dfsadmin -report -dead
-  - docker-compose exec master hdfs dfsadmin -report -decommissioning
+  - sleep 5
   - docker-compose logs master
   - docker-compose logs slave
+  - docker-compose exec master hdfs dfsadmin -report
 
 
 
