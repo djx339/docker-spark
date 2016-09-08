@@ -13,7 +13,7 @@ ENV HADOOP_CONF_DIR /hadoop/etc/hadoop
 ENV PATH $JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
 
 RUN mkdir -p \
-        /var/run/ssh \
+        /var/run/sshd \
         /root/.ssh \
         /data
 
