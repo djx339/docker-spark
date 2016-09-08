@@ -1,5 +1,6 @@
 language: bash
-service: docker
+services:
+  - docker
 
 env:
   - APP=dnsmasq            VERSION=
