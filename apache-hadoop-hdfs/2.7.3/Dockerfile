@@ -19,10 +19,10 @@ RUN mkdir -p \
 
 # install hadoop
 RUN apk --no-cache add \
-                curl \
-                gnupg \
-                openjdk7 \
-                openssh \
+                curl=7.50.1-r0 \
+                gnupg=2.1.12-r0 \
+                openjdk7=7.91.2.6.3-r2 \
+                openssh=7.2_p2-r3 \
     && set -x \
     && curl -SL http://mirrors.sonic.net/apache/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -o hadoop.tar.gz \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz.asc -o hadoop.tar.gz.asc \
