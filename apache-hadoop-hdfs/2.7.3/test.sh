@@ -22,16 +22,17 @@ start_nameserver() {
 }
 
 start_master() {
-    master="$(docker run -itd -h master $hadoop_image namenode)"
+    master="$(docker run -itd -h master --dns $nameserver_ip $hadoop_image namenode)"
     master_ip="$(container_ip $master)"
     echo add helloworld master $master_ip | nc $nameserver_ip 1234
 }
 
 start_slave() {
     slave_name="$1"
-    slave="$(docker run -itd -h slave1 $hadoop_image datanode)"
+    slave="$(docker run -itd -h slave1 --dns $nameserver_ip $hadoop_image datanode)"
     slave_ip="$(container_ip $slave)"
     echo add helloworld $slave_name $slave_ip | nc $nameserver_ip 1234
+    echo add-slave helloworld $slave_name | nc $master_ip 1234
 }
 
 start_nameserver
