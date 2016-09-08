@@ -15,13 +15,13 @@ script:
 
 after_script:
   - docker images
-  - if [[ "$APP" == "apache-hadoop-hdfs" ]]; then
-      ./apache-hadoop-hdfs/$VERSION/test.sh
-    fi
 
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ${image}
+  - if [ "$APP" == "apache-hadoop-hdfs" ]; then
+      bash ${TRAVIS_BUILD_DIR}/apache-hadoop-hdfs/$VERSION/test.sh
+    fi
 
 
 
