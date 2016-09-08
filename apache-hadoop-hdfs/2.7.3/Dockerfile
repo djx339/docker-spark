@@ -36,6 +36,8 @@ RUN apk --no-cache add \
 COPY assets /hadoop_assets
 
 RUN cp -rvf /hadoop_assets/conf/id_rsa /hadoop_assets/conf/authorized_keys /root/.ssh \
-    && cp -rvf /hadoop_assets/conf/core-site.xml /hadoop_assets/conf/hdfs-site.xml $HADOOP_CONF_DIR/
-    
+    && cp -rvf /hadoop_assets/conf/core-site.xml /hadoop_assets/conf/hdfs-site.xml $HADOOP_CONF_DIR/ \
+    && chmod a+x /hadoop_assets/runtime/*
 
+ENTRYPOINT ["/hadoop_assets/runtime/entrypoint.sh"]
+CMD ["all"]

@@ -53,6 +53,9 @@ case $1 in
     datanode)
         hadoop_start_datanode
         ;;
+    all)
+        hadoop_start_dfs
+        ;;
     *)
         exec "$@"
 esac
