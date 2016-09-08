@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM alpine:3.4
 MAINTAINER Daniel D <djx339@gamil.com>
 
 # Setup a volume for data
@@ -6,17 +6,23 @@ VOLUME ["/data"]
 
 ENV HADOOP_VERSION 2.7.3
 
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk/
 ENV HADOOP_HOME /hadoop
 ENV HADOOP_PREFIX /hadoop
-ENV PATH $HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+ENV HADOOP_CONF_DIR /hadoop/etc/hadoop
+ENV PATH $JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+
+RUN mkdir -p \
+        /var/run/ssh \
+        /root/.ssh \
+        /data
 
 # install hadoop
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk --no-cache add \
                 curl \
-                openjdk-7-jre-headless \
-                openssh-server \
-    && rm -rf /var/lib/apt/lists/* \
+                gnupg \
+                openjdk7 \
+                openssh \
     && set -x \
     && mkdir -p /hadoop \
     && curl -SL http://mirrors.sonic.net/apache/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -o hadoop.tar.gz \
@@ -25,4 +31,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && gpg --import KEYS \
     && gpg --verify hadoop.tar.gz.asc \
     && tar -zxC /hadoop --strip-components=1 -f hadoop.tar.gz \
-    && rm hadoop* KEYS \
+    && rm hadoop.* KEYS \
+
+COPY assets /hadoop_assets
+
+RUN cp /hadoop_assets/conf/id_rsa /hadoop_assets/conf/authorized_keys /root/.ssh \
+    && cp /hadoop_assets/conf/core-site.xml /hadoop_assets/conf/hdfs-site.xml $HADOOP_CONF_DIR/
+    
+
