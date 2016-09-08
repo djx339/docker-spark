@@ -30,7 +30,8 @@ RUN apk --no-cache add \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/KEYS -o KEYS \
     && gpg --import KEYS \
     && gpg --verify hadoop.tar.gz.asc \
-    && tar -zxC /hadoop -f hadoop.tar.gz \
+    && tar -zxC / -f hadoop.tar.gz \
+    && mv /hadoop-$$HADOOP_VERSION /hadoop \
     && rm hadoop.* KEYS
 
 COPY assets /hadoop_assets
