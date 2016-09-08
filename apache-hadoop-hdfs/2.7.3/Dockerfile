@@ -17,13 +17,11 @@ RUN mkdir -p \
         /root/.ssh \
         /data
 
-# install dnc a netcat application as a tcp server
+# install dnc a netcat like app as a tcp server
 # do some dynamic configurations update.
 ENV DNC_VERSION 0.1.4
-RUN curl -SL https://github.com/djx339/dnc/releases/download/$DNC_VERSION/dnc-linux-amd64 > /usr/bin/dnc \
-    && chmod a+x /usr/bin/dnc
 
-# install hadoop
+# install applications
 RUN apt-get update && apt-get install -y --no-install-recommends \
                 curl \
                 openjdk-7-jre-headless \
@@ -38,6 +36,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && gpg --verify hadoop.tar.gz.asc \
     && tar -zxC /hadoop --strip-components=1 -f hadoop.tar.gz \
     && rm hadoop* KEYS \
+    && curl -SL https://github.com/djx339/dnc/releases/download/$DNC_VERSION/dnc-linux-amd64 > /usr/bin/dnc \
+    && chmod a+x /usr/bin/dnc
 
 COPY assets /hadoop_assets
 
