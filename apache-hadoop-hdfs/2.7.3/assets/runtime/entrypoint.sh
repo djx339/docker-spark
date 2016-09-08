@@ -25,7 +25,7 @@ hadoop_configure_common() {
     
     sed -i 's#^export JAVA_HOME.*$#export JAVA_HOME="'"${JAVA_HOME}"'"#g' $HADOOP_CONF_DIR/hadoop-env.sh
     
-    ssh-keyscan localhost 2>&1 | sort -u - ~/.ssh/known_hosts > ~/.ssh/tmp_hosts
+    ssh-keyscan -t rsa,dsa localhost 2>&1 | sort -u - ~/.ssh/known_hosts > ~/.ssh/tmp_hosts
     mv ~/.ssh/tmp_hosts ~/.ssh/known_hosts
 }
 
