@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # linster configurations.
 LINSTER=${LINSTER:-/hadoop_assets/runtime/linster}
@@ -8,7 +8,7 @@ IP=$(ifconfig | grep -A1 eth0 | grep inet | awk '{print $2}' | cut -d":" -f2)
 
 
 start_linster() {
-    nc -lkp $LINSTER_PORT -e $LINSTER
+    dnc -l -k -p $LINSTER_PORT -e $LINSTER
 }
 
 hadoop_configure_common() {
@@ -18,7 +18,7 @@ hadoop_configure_common() {
 }
 
 hadoop_configure_hdfs() {
-    sed -i 's/{{master}}/'"${MASTER}"'/g' $HADOOP_CONF_DIR/core-site.xml
+    sed -i 's/{{master}}/'"${MASTER:-master}"'/g' $HADOOP_CONF_DIR/core-site.xml
 }
 
 hadoop_format_namenode() {
