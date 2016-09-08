@@ -18,6 +18,7 @@ before_install:
 before_script:
   - cd $APP/$VERSION
   - image="djx339/$APP:${VERSION:-latest}"
+  - docker pull $image || true
 
 script:
   - docker build -t "$image" .
