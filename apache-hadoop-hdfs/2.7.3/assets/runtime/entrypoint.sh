@@ -21,6 +21,7 @@ hadoop_configure_common() {
     chmod go-rx /root/.ssh
     chmod go-rwx /root/.ssh/id_rsa
     chmod go-wx /root/.ssh/authorized_keys
+    touch /root/.ssh/known_hosts
     
     sed -i 's#^export JAVA_HOME.*$#export JAVA_HOME="'"${JAVA_HOME}"'"#g' $HADOOP_CONF_DIR/hadoop-env.sh
     
