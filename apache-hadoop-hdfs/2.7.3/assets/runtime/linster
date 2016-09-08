@@ -7,7 +7,7 @@ read action pass slave
 
 case $action in
 	add-slave)
-		echo $slave >> $HADOOP_CONF_DIR/slave
+		echo $slave >> $HADOOP_CONF_DIR/slaves
 		;;
 	*)
 		exit
