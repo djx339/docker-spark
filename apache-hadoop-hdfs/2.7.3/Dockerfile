@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && gpg --import KEYS \
     && gpg --verify hadoop.tar.gz.asc \
     && tar -zxC /hadoop --strip-components=1 -f hadoop.tar.gz \
-    && rm hadoop* KEYS \
+    && rm hadoop.* KEYS \
     && curl -SL https://github.com/djx339/dnc/releases/download/$DNC_VERSION/dnc-linux-amd64 > /usr/bin/dnc \
     && chmod a+x /usr/bin/dnc
 
