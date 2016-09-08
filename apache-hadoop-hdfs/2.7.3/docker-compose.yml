@@ -4,6 +4,9 @@ services:
   master:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: namenode
+    environment:
+      - MASTER=master
+      - DNSSERVER=dnsserver
     depends_on:
       - nameserver
     links:
@@ -11,8 +14,7 @@ services:
     dns:
       - dnsserver
     hostname: master
-    environment:
-      - DNSSERVER=dnsserver
+
   slave:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: datanode
