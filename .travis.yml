@@ -3,8 +3,17 @@ services:
   - docker
 
 env:
+  global:
+  - DOCKER_COMPOSE_VERSION: 1.8.0
+  matrix:
   - APP=dnsmasq            VERSION=
   - APP=apache-hadoop-hdfs VERSION=2.7.3
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
   - cd $APP/$VERSION
@@ -19,9 +28,11 @@ after_script:
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ${image}
-  - if [ "$APP" == "apache-hadoop-hdfs" ]; then
-      bash ${TRAVIS_BUILD_DIR}/apache-hadoop-hdfs/$VERSION/test.sh;
-    fi
+  - docker-compose up -d
+  - docker-compose scale slave=3
+  - docker-compose exec hdfs dfsadmin -report -live
+  - docker-compose exec hdfs dfsadmin -report -dead
+  - docker-compose exec hdfs dfsadmin -report -decommissioning
 
 
 
