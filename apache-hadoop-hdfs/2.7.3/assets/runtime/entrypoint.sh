@@ -6,6 +6,10 @@ LINSTER_PORT=${LINSTER_PORT:-1234}
 
 IP=$(ifconfig | grep -A1 eth0 | grep inet | awk '{print $2}' | cut -d":" -f2)
 
+start_sshd() {
+    /usr/sbin/sshd
+}
+
 
 start_linster() {
     dnc -l -k -p $LINSTER_PORT -e $LINSTER
@@ -63,6 +67,7 @@ hadoop_configure_common
 hadoop_configure_hdfs
 
 register_dns
+start_sshd
 
 # main menu
 case $1 in
