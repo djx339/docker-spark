@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM ubuntu:14.04
 MAINTAINER Daniel D <djx339@gamil.com>
 
 # Setup a volume for data
