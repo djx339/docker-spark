@@ -34,6 +34,7 @@ after_success:
   - docker-compose exec master hdfs dfsadmin -report -live
   - docker-compose exec master hdfs dfsadmin -report -dead
   - docker-compose exec master hdfs dfsadmin -report -decommissioning
+  - docker-compose logs
 
 
 
