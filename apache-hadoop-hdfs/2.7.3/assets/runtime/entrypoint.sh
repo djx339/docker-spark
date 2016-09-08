@@ -8,7 +8,7 @@ IP=$(ifconfig | grep -A1 eth0 | grep inet | awk '{print $2}' | cut -d":" -f2)
 
 
 start_linster() {
-    nohup nc -lkp $LINSTER_PORT -e $LINSTER &
+    nc -lkp $LINSTER_PORT -e $LINSTER
 }
 
 hadoop_configure_common() {
@@ -42,9 +42,6 @@ hadoop_start_dfs() {
 hadoop_configure_common
 hadoop_configure_hdfs
 
-# start a linster to dynimic modify hodoop slave file
-start_linster
-
 # main menu
 case $1 in
     namenode)
@@ -59,3 +56,6 @@ case $1 in
     *)
         exec "$@"
 esac
+
+# start a linster to dynimic modify hodoop slave file
+start_linster
