@@ -6,7 +6,7 @@ VOLUME ["/data"]
 
 ENV HADOOP_VERSION 2.7.3
 
-ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk/
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 ENV HADOOP_HOME /hadoop
 ENV HADOOP_PREFIX /hadoop
 ENV HADOOP_CONF_DIR /hadoop/etc/hadoop
@@ -17,22 +17,27 @@ RUN mkdir -p \
         /root/.ssh \
         /data
 
+# install dnc a netcat application as a tcp server
+# do some dynamic configurations update.
+ENV DNC_VERSION 0.1.4
+RUN curl -SL https://github.com/djx339/dnc/releases/download/$DNC_VERSION/dnc-linux-amd64 > /usr/bin/dnc \
+    && chmod a+x /usr/bin/dnc
+
 # install hadoop
-RUN apk --no-cache add \
-                bash \
-                curl=7.50.1-r0 \
-                gnupg=2.1.12-r0 \
-                openjdk7=7.91.2.6.3-r2 \
-                openssh=7.2_p2-r3 \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+                curl \
+                openjdk-7-jre-headless \
+                openssh-server \
+    && rm -rf /var/lib/apt/lists/* \
     && set -x \
+    && mkdir -p /hadoop \
     && curl -SL http://mirrors.sonic.net/apache/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -o hadoop.tar.gz \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz.asc -o hadoop.tar.gz.asc \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/KEYS -o KEYS \
     && gpg --import KEYS \
     && gpg --verify hadoop.tar.gz.asc \
-    && tar -zxC / -f hadoop.tar.gz \
-    && mv /hadoop-$HADOOP_VERSION /hadoop \
-    && rm hadoop.* KEYS
+    && tar -zxC /hadoop --strip-components=1 -f hadoop.tar.gz \
+    && rm hadoop* KEYS \
 
 COPY assets /hadoop_assets
 
