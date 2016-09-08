@@ -30,9 +30,9 @@ after_success:
   - docker push ${image}
   - docker-compose up -d
   - docker-compose scale slave=3
-  - docker-compose exec hdfs dfsadmin -report -live
-  - docker-compose exec hdfs dfsadmin -report -dead
-  - docker-compose exec hdfs dfsadmin -report -decommissioning
+  - docker-compose exec master hdfs dfsadmin -report -live
+  - docker-compose exec master hdfs dfsadmin -report -dead
+  - docker-compose exec master hdfs dfsadmin -report -decommissioning
 
 
 
