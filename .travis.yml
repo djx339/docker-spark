@@ -35,6 +35,7 @@ after_success:
   - docker-compose exec master hdfs dfsadmin -report -dead
   - docker-compose exec master hdfs dfsadmin -report -decommissioning
   - docker-compose logs
+  - docker-compose exec slave ping -c 3 master
 
 
 
