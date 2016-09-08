@@ -37,25 +37,48 @@ hadoop_start_dfs() {
     $HADOOP_PREFIX/sbin/start-dfs.sh
 }
 
+register_dns() {
+    if [[ -n "DNSSERVER" ]]; then
+        echo add helloworld $HOSTNAME $IP | nc $DNSSERVER 1234
+    fi
+}
+
+register_slave() {
+    if [[ -n "MASTER" ]]; then
+        echo add-slave helloworld $HOSTNAME | nc $MASTER 1234
+    fi
+}
+
+forground() {
+    while :;
+    do
+        echo `date`
+        sleep 60
+    done
+}
+
 
 # basic configure for all node
 hadoop_configure_common
 hadoop_configure_hdfs
 
+register_dns
+
 # main menu
 case $1 in
     namenode)
         hadoop_start_namenode
+        start_linster
         ;;
     datanode)
         hadoop_start_datanode
+        register_slave
+        forground
         ;;
     all)
         hadoop_start_dfs
+        forground
         ;;
     *)
         exec "$@"
 esac
-
-# start a linster to dynimic modify hodoop slave file
-start_linster

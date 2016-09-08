@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  master:
+    image: djx339/apache-hadoop-hdfs:2.7.3
+    command: namenode
+    depends_on:
+      - nameserver
+    links:
+      - nameserver:dnsserver
+    dns:
+      - dnsserver
+    hostname: master
+    environment:
+      - DNSSERVER=dnsserver
+  slave:
+    image: djx339/apache-hadoop-hdfs:2.7.3
+    command: datanode
+    environment:
+      - DNSSERVER=dnsserver
+      - MASTER=master
+    depends_on:
+      - nameserver
+      - master
+    links:
+      - nameserver:dnsserver
+    dns:
+      - dnsserver
+  nameserver:
+    image: djx339/dnsmasq
