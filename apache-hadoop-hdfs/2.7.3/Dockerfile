@@ -31,7 +31,7 @@ RUN apk --no-cache add \
     && gpg --import KEYS \
     && gpg --verify hadoop.tar.gz.asc \
     && tar -zxC / -f hadoop.tar.gz \
-    && mv /hadoop-$$HADOOP_VERSION /hadoop \
+    && mv /hadoop-$HADOOP_VERSION /hadoop \
     && rm hadoop.* KEYS
 
 COPY assets /hadoop_assets
