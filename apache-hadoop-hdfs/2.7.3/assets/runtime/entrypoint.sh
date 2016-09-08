@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 # linster configurations.
 LINSTER=${LINSTER:-/hadoop_assets/runtime/linster}
 LINSTER_PORT=${LINSTER_PORT:-1234}
