@@ -36,7 +36,7 @@ RUN apk --no-cache add \
 
 COPY assets /hadoop_assets
 
-RUN cp /hadoop_assets/conf/id_rsa /hadoop_assets/conf/authorized_keys /root/.ssh \
-    && cp /hadoop_assets/conf/core-site.xml /hadoop_assets/conf/hdfs-site.xml $HADOOP_CONF_DIR/
+RUN cp -rvf /hadoop_assets/conf/id_rsa /hadoop_assets/conf/authorized_keys /root/.ssh \
+    && cp -rvf /hadoop_assets/conf/core-site.xml /hadoop_assets/conf/hdfs-site.xml $HADOOP_CONF_DIR/
     
 
