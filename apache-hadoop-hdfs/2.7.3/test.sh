@@ -3,13 +3,13 @@
 set -e
 
 nameserver_image="djx339/dnsmasq"
-nameserver_container=
-nameserver_ip=
+nameserver_container=""
+nameserver_ip=""
 
 hadoop_image="djx339/apache-hadoop-hdfs:2.7.3"
 
 container_ip(){
-    echo "docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1"
+    echo "$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1)"
 }
 
 start_nameserver() {
@@ -38,4 +38,4 @@ start_nameserver
 sleep 2
 start_master
 sleep 2
-start_slave slave1
+start_slave "slave1"

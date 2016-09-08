@@ -15,7 +15,7 @@ script:
 
 after_script:
   - docker images
-  - if [ "$APP" == "apache-hadoop-hdfs" ]; then
+  - if [[ "$APP" == "apache-hadoop-hdfs" ]]; then
       ./apache-hadoop-hdfs/$VERSION/test.sh
     fi
 
