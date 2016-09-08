@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
                 curl \
                 openjdk-7-jre-headless \
                 openssh-server \
+                rsync \
     && rm -rf /var/lib/apt/lists/* \
     && set -x \
     && mkdir -p /hadoop \
