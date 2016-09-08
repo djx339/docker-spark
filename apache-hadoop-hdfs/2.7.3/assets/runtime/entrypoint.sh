@@ -69,27 +69,32 @@ forground() {
     done
 }
 
+prepare_hadoop() {
+    # basic configure for all node
+    hadoop_configure_common
+    hadoop_configure_hdfs
 
-# basic configure for all node
-hadoop_configure_common
-hadoop_configure_hdfs
+    register_dns
+    start_sshd
+}
 
-register_dns
-start_sshd
 
 # main menu
 case $1 in
     namenode)
+        prepare_hadoop
         hadoop_format_namenode
         hadoop_start_namenode
         start_linster
         ;;
     datanode)
+        prepare_hadoop
         hadoop_start_datanode
         register_slave
         forground
         ;;
     all)
+        prepare_hadoop
         hadoop_start_dfs
         forground
         ;;
