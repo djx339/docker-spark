@@ -24,7 +24,6 @@ RUN apk --no-cache add \
                 openjdk7 \
                 openssh \
     && set -x \
-    && mkdir -p /hadoop \
     && curl -SL http://mirrors.sonic.net/apache/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -o hadoop.tar.gz \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz.asc -o hadoop.tar.gz.asc \
     && curl -SL https://dist.apache.org/repos/dist/release/hadoop/common/KEYS -o KEYS \
