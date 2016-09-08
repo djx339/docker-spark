@@ -74,6 +74,7 @@ start_sshd
 # main menu
 case $1 in
     namenode)
+        hadoop_format_namenode
         hadoop_start_namenode
         start_linster
         ;;
