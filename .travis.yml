@@ -7,7 +7,6 @@ env:
   - APP=apache-hadoop-hdfs VERSION=2.7.3
 
 before_script:
-  - env | sort
   - cd $APP/$VERSION
   - image="djx339/$APP:${VERSION:-latest}"
 
