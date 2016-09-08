@@ -30,7 +30,7 @@ after_success:
   - docker push ${image}
   - docker-compose up -d
   - docker-compose ps
-  - sleep 5
+  - sleep 15
   - docker-compose logs master
   - docker-compose logs slave
   - docker-compose exec master hdfs dfsadmin -report
