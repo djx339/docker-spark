@@ -9,7 +9,7 @@ env:
 before_script:
   - env | sort
   - cd $APP/$VERSION
-  - image="djx339/$app:${VERSION:-latest}"
+  - image="djx339/$APP:${VERSION:-latest}"
 
 script:
   - docker build -t "$image" .
