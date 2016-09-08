@@ -49,6 +49,19 @@ hadoop_start_dfs() {
     $HADOOP_PREFIX/sbin/start-dfs.sh
 }
 
+hadoop_wait_for_master() {
+    timeout=120
+    until curl $MASTER:9000 > /dev/null 2>/dev/null; do
+        echo "Hadoop master is unavailable - sleeping"
+        sleep 1
+        timeout="$(( $timeout - 1))"
+        if [[ "$timeout" == "0" ]]; then
+            echo "Hadoop master is unavailable - timeout !"
+            exit 1
+        fi
+    done
+}
+
 register_dns() {
     if [[ -n "DNSSERVER" ]]; then
         echo add helloworld $HOSTNAME $IP | nc $DNSSERVER 1234
@@ -78,7 +91,6 @@ prepare_hadoop() {
     start_sshd
 }
 
-
 # main menu
 case $1 in
     namenode)
@@ -88,6 +100,7 @@ case $1 in
         start_linster
         ;;
     datanode)
+        hadoop_wait_for_master
         prepare_hadoop
         hadoop_start_datanode
         register_slave
