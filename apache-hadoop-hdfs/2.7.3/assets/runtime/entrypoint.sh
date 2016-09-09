@@ -18,7 +18,7 @@ start_sshd() {
 }
 
 get_master() {
-    master="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/master | jq --raw-output '.node.value')"
+    master="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/$MASTER_KEY | jq --raw-output '.node.value')"
     export MASTER=$master
 }
 
