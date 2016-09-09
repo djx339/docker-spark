@@ -29,10 +29,20 @@ after_success:
   - docker push ${image}
   - docker-compose up -d
   - docker-compose ps
-  - sleep 60
+  - timeout=120;
+    until docker-compose exec master hdfs dfsadmin -report > /dev/null 2>/dev/null; do
+        echo "Hadoop master is unavailable - sleeping";
+        sleep 1;
+        timeout="$(( $timeout - 1))";
+        if [[ "$timeout" == "0" ]]; then
+            echo "Hadoop master is unavailable - timeout !";
+            exit 1;
+        fi;
+    done;
   - docker-compose logs master
   - docker-compose logs worker
   - docker-compose exec master hdfs dfsadmin -report
+  - docker-compose ps
 
 
 
