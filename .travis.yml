@@ -31,7 +31,7 @@ after_success:
   - docker-compose ps
   - sleep 60
   - docker-compose logs master
-  - docker-compose logs slave
+  - docker-compose logs worker
   - docker-compose exec master hdfs dfsadmin -report
 
 
