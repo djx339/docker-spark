@@ -6,7 +6,6 @@ env:
   global:
   - DOCKER_COMPOSE_VERSION: 1.8.0
   matrix:
-  - APP=dnsmasq            VERSION=
   - APP=apache-hadoop-hdfs VERSION=2.7.3
 
 before_install:
