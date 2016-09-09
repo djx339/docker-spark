@@ -2,14 +2,24 @@
 
 set -ex
 
-# linster configurations.
-LINSTER=${LINSTER:-/hadoop_assets/runtime/linster}
-LINSTER_PORT=${LINSTER_PORT:-1234}
+_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+DNS_WATCHER="$_dir/dns_watcher"
+SLAVE_WATCHER="$_dir/slave_watcher"
+
+MASTER_KEY=hadoop/master
+SLAVE_KEY_DIR=hadoop/slaves
+HOSTS_KEY_DIR=hosts
 
 IP=$(ifconfig | grep -A1 eth0 | grep inet | awk '{print $2}' | cut -d":" -f2)
 
 start_sshd() {
     /usr/sbin/sshd
+}
+
+get_master() {
+    master="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/master | jq --raw-output '.node.value')"
+    export MASTER=$master
 }
 
 hadoop_configure_common() {
@@ -58,15 +68,29 @@ hadoop_wait_for_master() {
 }
 
 register_dns() {
-    if [[ -n "$DNSSERVER" ]]; then
-        echo add helloworld $HOSTNAME $IP | nc $DNSSERVER 1234
+    if [[ -n "$ETCD_HOST" && -n "$ETCD_PORT" ]]; then
+        curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/$HOSTS_KEY_DIR/$HOSTNAME -XPUT -d value="$IP"
+    fi
+}
+
+register_master() {
+    if [[ -n "$ETCD_HOST" && -n "$ETCD_PORT" ]]; then
+        curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/$MASTER_KEY -XPUT -d value="$IP"
     fi
 }
 
 register_slave() {
-    if [[ -n "$MASTER" ]]; then
-        echo add-slave helloworld $HOSTNAME | nc $MASTER 1234
+    if [[ -n "$ETCD_HOST" && -n "$ETCD_PORT" ]]; then
+        curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/$SLAVE_KEY_DIR/$HOSTNAME -XPUT -d value="$IP"
     fi
+}
+
+start_dns_watcher() {
+    nohup $DNS_WATCHER &
+}
+
+start_slave_watcher() {
+    nohup $SLAVE_WATCHER &
 }
 
 forground() {
@@ -77,32 +101,42 @@ forground() {
     done
 }
 
-prepare_hadoop() {
-    # basic configure for all node
-    hadoop_configure_common
-    hadoop_configure_hdfs
-
-    register_dns
-    start_sshd
-}
-
 # main menu
 case $1 in
     namenode)
-        prepare_hadoop
+        start_dns_watcher
+        register_dns
+        register_master
+        get_master
+        start_slave_watcher
+        hadoop_configure_common
+        hadoop_configure_hdfs
+        start_sshd
         hadoop_format_namenode
         hadoop_start_namenode
-        start_linster
+        forground
         ;;
     datanode)
-        hadoop_wait_for_master
-        prepare_hadoop
-        hadoop_start_datanode
+        start_dns_watcher
+        register_dns
         register_slave
+        get_master
+        hadoop_wait_for_master
+        hadoop_configure_common
+        hadoop_configure_hdfs
+        start_sshd
+        hadoop_start_datanode
         forground
         ;;
     all)
-        prepare_hadoop
+        start_dns_watcher
+        register_dns
+        register_master
+        get_master
+        start_slave_watcher
+        hadoop_configure_common
+        hadoop_configure_hdfs
+        start_sshd
         hadoop_start_dfs
         forground
         ;;

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -x
+
+SLAVE_KEY_DIR=hadoop/slaves
+
+SLAVES_FILE=${HADOOP_CONF_DIR}/slaves
+
+ETCD_HOST="${ETCD_HOST:-172.17.0.2}"
+ETCD_PORT="${ETCD_PORT:-2379}"
+
+hadoop_update_slaves_file() {
+    slave="$1"
+
+    echo "===> update hadoop slaves file"
+    echo "===> slave: $slave"
+
+    if grep $slave $SLAVES_FILE; then
+        echo "===> slave $slave exitst"
+        return 0
+    fi
+    
+    echo $slave >> $SLAVES_FILE
+}
+
+update_slaves() {
+    keys=$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/${SLAVE_KEY_DIR}\?recursive\=true | jq --raw-output '.node.nodes[].key')
+    for key in ${keys[@]};
+    do
+        hadoop_update_slaves_file "${key##*/}"
+    done
+}
+
+update_slaves
+
+while :;
+do
+    v="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/${SLAVE_KEY_DIR}\?wait\=true\&recursive\=true)"
+    slave="$(echo $v | jq --raw-output '.node.key')"
+    hadoop_update_slaves_file "${slave##*/}"
+done
