@@ -51,7 +51,7 @@ hadoop_start_dfs() {
 
 hadoop_wait_for_master() {
     timeout=120
-    until curl $MASTER:9000 > /dev/null 2>/dev/null; do
+    until curl --noproxy $MASTER $MASTER:9000 > /dev/null 2>/dev/null; do
         echo "Hadoop master is unavailable - sleeping"
         sleep 1
         timeout="$(( $timeout - 1))"
