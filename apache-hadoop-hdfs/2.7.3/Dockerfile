@@ -5,6 +5,7 @@ MAINTAINER Daniel D <djx339@gamil.com>
 VOLUME ["/data"]
 
 ENV HADOOP_VERSION 2.7.3
+ENV ETCD_VERSION v3.0.7
 
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 ENV HADOOP_HOME /hadoop
@@ -17,13 +18,10 @@ RUN mkdir -p \
         /root/.ssh \
         /data
 
-# install dnc a netcat like app as a tcp server
-# do some dynamic configurations update.
-ENV DNC_VERSION 0.1.4
-
 # install applications
 RUN apt-get update && apt-get install -y --no-install-recommends \
                 curl \
+                jq \
                 openjdk-7-jre-headless \
                 openssh-server \
                 rsync \
@@ -37,8 +35,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && gpg --verify hadoop.tar.gz.asc \
     && tar -zxC /hadoop --strip-components=1 -f hadoop.tar.gz \
     && rm hadoop.* KEYS \
-    && curl -SL https://github.com/djx339/dnc/releases/download/$DNC_VERSION/dnc-linux-amd64 > /usr/bin/dnc \
-    && chmod a+x /usr/bin/dnc
+    && curl -SL https://github.com/coreos/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz -o /tmp/etcd.tar.gz \
+    && mkdir /tmp/etcd \
+    && tar -zxC /tmp/etcd --strip-components=1 -f /tmp/etcd.tar.gz \
+    && cp /tmp/etcd/etcdctl /usr/bin/ \
+    && rm -rvf /tmp/etcd /tmp/etcd.tar.gz
 
 COPY assets /hadoop_assets
 
