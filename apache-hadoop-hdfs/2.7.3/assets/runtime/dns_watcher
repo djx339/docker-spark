@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -x
+
+HOSTS_KEY=hosts
+
+ETCD_HOST="${ETCD_HOST:-172.17.0.2}"
+ETCD_PORT="${ETCD_PORT:-2379}"
+
+update_local_hosts_file() {
+    hostname="$1"
+    ip="$2"
+
+    echo "===> update local hosts file"
+    echo "===> hostname: $hostname"
+    echo "===> ip: $ip"
+
+    if [[ "$hostname" == "$HOSTNAME" || "$hostname" == "localhost" ]]; then
+        echo "===> !!! localhost or current machine, skiped"
+        return 0
+    fi
+
+    if grep $hostname /etc/hosts; then
+        cp /etc/hosts /tmp/hosts
+        grep -v /tmp/hosts > /etc/hosts
+    fi
+
+    echo "$ip    $hostname" >> /etc/hosts
+}
+
+update_hosts() {
+    keys=$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/${HOSTS_KEY}\?recursive\=true | jq --raw-output '.node.nodes[].key')
+    for key in ${keys[@]};
+    do
+        ip="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/${key} | jq --raw-output '.node.value')"
+        update_local_hosts_file "${key##*/}" "$ip"
+    done
+}
+
+update_hosts
+
+while :;
+do
+    v="$(curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/${HOSTS_KEY}\?wait\=true\&recursive\=true)"
+    host="$(echo $v | jq --raw-output '.node.key')"
+    ip="$(echo $v | jq --raw-output '.node.value')"
+    update_local_hosts_file "${host##*/}" "$ip"
+done
