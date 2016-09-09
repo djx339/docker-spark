@@ -6,32 +6,27 @@ services:
     command: namenode
     environment:
       - MASTER=master
-      - DNSSERVER=dnsserver
     depends_on:
-      - nameserver
+      - confserver
     links:
-      - nameserver:dnsserver
-    dns:
-      - dnsserver
+      - confserver:confserver
     hostname: master
     stdin_open: true
     tty: true
     restart: always
-  slave:
+  worker:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: datanode
     environment:
-      - DNSSERVER=dnsserver
       - MASTER=master
     depends_on:
-      - nameserver
+      - confserver
       - master
     links:
-      - nameserver:dnsserver
-    dns:
-      - dnsserver
+      - confserver:confserver
     stdin_open: true
     tty: true
     restart: always
-  nameserver:
-    image: djx339/dnsmasq
+  confserver:
+    image: djx339/etcd:v3.0.7
+    command: etcd --advertise-client-urls http://0.0.0.0:2379  --listen-client-urls http://0.0.0.0:2379

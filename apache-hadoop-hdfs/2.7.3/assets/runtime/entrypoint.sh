@@ -12,11 +12,6 @@ start_sshd() {
     /usr/sbin/sshd
 }
 
-
-start_linster() {
-    dnc -l -k -p $LINSTER_PORT -e $LINSTER
-}
-
 hadoop_configure_common() {
     chmod go-rx /root/.ssh
     chmod go-rwx /root/.ssh/id_rsa
