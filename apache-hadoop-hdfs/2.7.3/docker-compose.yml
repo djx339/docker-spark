@@ -5,7 +5,8 @@ services:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: namenode
     environment:
-      - MASTER=master
+      - ETCD_HOST=confserver
+      - ETCD_PORT=2379
     depends_on:
       - confserver
     links:
@@ -18,7 +19,8 @@ services:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: datanode
     environment:
-      - MASTER=master
+      - ETCD_HOST=confserver
+      - ETCD_PORT=2379
     depends_on:
       - confserver
       - master

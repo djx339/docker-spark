@@ -67,6 +67,19 @@ hadoop_wait_for_master() {
     done
 }
 
+wait_for_confserver() {
+    timeout=120
+    until curl --noproxy $ETCD_HOST $ETCD_HOST:$ETCD_PORT/version > /dev/null 2>/dev/null; do
+        echo "confserver is unavailable - sleeping"
+        sleep 1
+        timeout="$(( $timeout - 1))"
+        if [[ "$timeout" == "0" ]]; then
+            echo "Confserver is unavailable - timeout !"
+            exit 1
+        fi
+    done
+}
+
 register_dns() {
     if [[ -n "$ETCD_HOST" && -n "$ETCD_PORT" ]]; then
         curl --noproxy $ETCD_HOST -sSL http://$ETCD_HOST:$ETCD_PORT/v2/keys/$HOSTS_KEY_DIR/$HOSTNAME -XPUT -d value="$IP"
@@ -104,6 +117,7 @@ forground() {
 # main menu
 case $1 in
     namenode)
+        wait_for_confserver
         start_dns_watcher
         register_dns
         register_master
@@ -117,6 +131,7 @@ case $1 in
         forground
         ;;
     datanode)
+        wait_for_confserver
         start_dns_watcher
         register_dns
         register_slave
@@ -126,18 +141,6 @@ case $1 in
         hadoop_configure_hdfs
         start_sshd
         hadoop_start_datanode
-        forground
-        ;;
-    all)
-        start_dns_watcher
-        register_dns
-        register_master
-        get_master
-        start_slave_watcher
-        hadoop_configure_common
-        hadoop_configure_hdfs
-        start_sshd
-        hadoop_start_dfs
         forground
         ;;
     *)
