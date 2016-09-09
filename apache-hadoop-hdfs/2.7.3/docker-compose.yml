@@ -15,6 +15,8 @@ services:
     stdin_open: true
     tty: true
     restart: always
+    ports:
+      - 50070
   worker:
     image: djx339/apache-hadoop-hdfs:2.7.3
     command: datanode
