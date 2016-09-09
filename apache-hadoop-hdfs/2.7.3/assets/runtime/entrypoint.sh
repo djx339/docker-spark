@@ -63,13 +63,13 @@ hadoop_wait_for_master() {
 }
 
 register_dns() {
-    if [[ -n "DNSSERVER" ]]; then
+    if [[ -n "$DNSSERVER" ]]; then
         echo add helloworld $HOSTNAME $IP | nc $DNSSERVER 1234
     fi
 }
 
 register_slave() {
-    if [[ -n "MASTER" ]]; then
+    if [[ -n "$MASTER" ]]; then
         echo add-slave helloworld $HOSTNAME | nc $MASTER 1234
     fi
 }
